@@ -34,4 +34,4 @@ print(cols[i][j]) # Prints column i element of line number j
 print("Average=",average,"Sum=",sum,"Sigma=",sd,"Maximum=",max,"Minimum=",min)
 ```
 
-For details please follow the link https://www.respt.in/p/python-package-datapy.html
+For details please follow the link https://www.respt.in/p/python-package-tablefile.html
