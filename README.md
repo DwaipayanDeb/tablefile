@@ -13,7 +13,7 @@ Use example:
 from tablefile import file
 f1=file("C:/Folder/SubFolder/data-file-name.txt","\t") # Last argument here specifies the column separator (here tab). 
 #    or
-f1=datafile("C:/Folder/SubFolder/data-file-name.txt") #If separator is blank or space (" ") one need not specify separator.
+f1=file("C:/Folder/SubFolder/data-file-name.txt") #If separator is blank or space (" ") one need not specify separator.
 lines=[] # An empty list to store lines from the file
 cols=[]  # An empty list to store columns from the file 
 average=[] # An empty list to store average of column values
