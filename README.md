@@ -1,7 +1,11 @@
 from tablefile import *
-f1=file("C:/Folder/SubFolder/data-file-name.txt","\t") # Last argument here specifies the column separator (here tab). 
+
+f1=file("C:/Folder/SubFolder/data-file-name.txt","\t") # Last argument here specifies the column separator (here tab).
+
 #    or
+
 f1=file("C:/Folder/SubFolder/data-file-name.txt") #If separator is blank or space (" ") one need not specify separator.
+
 
 lines=f1.read() # or 'f1.read("l/c")'. This will read all the lines and store in 'lines' as list array
 cols=f1.read("c/l")# Will read all the columns and store in 'cols' as list array
