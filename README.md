@@ -19,6 +19,7 @@ print(lines[i][j]) # Prints column j element of line number i  (e.g. for 1st lin
 print(cols[i][j]) # Prints column i element of line number j  
 print("Average=",average,"Sum=",sum,"Sigma_population=",std,"Sigma_sample=",stds,"Maximum=",max,"Minimum=",min)
 
+
 # In the below operations the argument can be any 'list'
 List_converted=convert(cols[0],'(x**2+sin(x))/2') # converts elements of a list by following any pre-defined expression
 Value_sum=sm(cols[0]) # Summation of numeric elements. 
