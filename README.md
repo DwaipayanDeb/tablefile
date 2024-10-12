@@ -38,4 +38,4 @@ print(List_converted,Value_sum,Value_av,Value_sd,Value_sd_sample,Value_mx,Value_
 # **In all above cases Strings will be neglected during the calculation**
 ```
 
-For details please follow the link https://www.respt.in/p/python-package-tablefile.html
+For details please follow the link https://www.researchsquare.com/article/rs-1004075/v2
