@@ -1,13 +1,10 @@
 
-#v0.1.1
+#v0.1.2
 from math import *
 class file:
 
     def __init__(self,filename,*separator):   # * symbol before separator makes it optional variable for user while creating the object (also it allows more than one sparator values)
         self.filename=filename
-        self.separator=separator
-        if len(self.separator) != 0 and self.separator[0] is not None:
-            self._validate_separator(self.filename, self.separator[0])
         try:
             f=open(self.filename,"r+")
         except FileNotFoundError:
@@ -25,6 +22,14 @@ class file:
         self.lines=lineno #len(f.readlines())
        # print(len(self.lines))
         f.close()
+
+        if len(separator) != 0 and separator[0] is not None:
+            self.separator=separator
+            self._validate_separator(self.filename, self.separator[0])
+        else:
+            detected_sep = self._detect_separator()
+            self.separator = (detected_sep,)
+            print(f"No separator argument provided. Automatically identified and set separator to {repr(detected_sep)}.")
         
     def _validate_separator(self, filename, sep):
         """Validate that the provided separator splits the first line into multiple fields."""
@@ -45,6 +50,50 @@ class file:
             raise FileNotFoundError(f"Input file not found: {filename}")
         except UnicodeDecodeError:
             raise ValueError(f"Unable to read file '{filename}'. Please ensure it is a text file.")
+
+    def _detect_separator(self):
+        candidates = [',', '\t', ';', '|', ' ']
+        counts = {c: [] for c in candidates}
+        try:
+            with open(self.filename, 'r') as fh:
+                lines = [line.strip() for line in fh]
+        except Exception:
+            return " "
+            
+        data_lines = []
+        for line in lines:
+            if not line or line.startswith('#'):
+                continue
+            data_lines.append(line)
+            if len(data_lines) >= 10:
+                break
+                
+        if not data_lines:
+            return " "
+            
+        for line in data_lines:
+            for c in candidates:
+                counts[c].append(line.count(c))
+                
+        valid_seps = []
+        for c in candidates:
+            if all(count > 0 for count in counts[c]):
+                if len(set(counts[c])) == 1:
+                    valid_seps.append((c, counts[c][0], True))
+                else:
+                    avg_count = sum(counts[c]) / len(counts[c])
+                    valid_seps.append((c, avg_count, False))
+                    
+        consistent_seps = [item for item in valid_seps if item[2]]
+        if consistent_seps:
+            consistent_seps.sort(key=lambda x: x[1], reverse=True)
+            return consistent_seps[0][0]
+            
+        if valid_seps:
+            valid_seps.sort(key=lambda x: x[1], reverse=True)
+            return valid_seps[0][0]
+            
+        return " "
 
     def _parse_val(self, s):
         try:

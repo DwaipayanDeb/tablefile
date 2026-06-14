@@ -7,7 +7,7 @@ with open(readme_path, "r") as fh:
 
 setuptools.setup(
     name="tablefile", # Package Name
-    version="0.1.1",
+    version="0.1.2",
     author="Dwaipayan Deb",
     author_email="dwaipayandeb@yahoo.co.in",
     description="A package for reading and processing tabular data files for analytical applications",
