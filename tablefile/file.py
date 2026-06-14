@@ -1,9 +1,13 @@
+
+#v0.1.1
 from math import *
 class file:
 
     def __init__(self,filename,*separator):   # * symbol before separator makes it optional variable for user while creating the object (also it allows more than one sparator values)
         self.filename=filename
         self.separator=separator
+        if len(self.separator) != 0 and self.separator[0] is not None:
+            self._validate_separator(self.filename, self.separator[0])
         try:
             f=open(self.filename,"r+")
         except FileNotFoundError:
@@ -22,6 +26,26 @@ class file:
        # print(len(self.lines))
         f.close()
         
+    def _validate_separator(self, filename, sep):
+        """Validate that the provided separator splits the first line into multiple fields."""
+        try:
+            with open(filename, 'r') as fh:
+                for line in fh:
+                    line = line.strip()
+                    if not line or line.startswith('#'):
+                        continue
+                    parts = line.split(sep)
+                    if len(parts) <= 1:
+                        raise ValueError(
+                            f"The separator '{sep}' does not appear to split the input file '{filename}'. "
+                            "Please provide the correct delimiter for the file format."
+                        )
+                    break
+        except FileNotFoundError:
+            raise FileNotFoundError(f"Input file not found: {filename}")
+        except UnicodeDecodeError:
+            raise ValueError(f"Unable to read file '{filename}'. Please ensure it is a text file.")
+
     def _parse_val(self, s):
         try:
             stripped = s.strip()
