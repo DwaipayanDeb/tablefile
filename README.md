@@ -1,4 +1,4 @@
-# tablefile Package Tutorial (v0.1.0)
+# tablefile Package Tutorial (v0.1.2)
 
 `tablefile` is a python package for reading, processing, and modifying tabular data files (separated by tabs, spaces, or any other delimiter) easily for analytical applications.
 
@@ -9,7 +9,7 @@ pip install tablefile
 
 ---
 
-## What's New in v0.1.0 (Changelog from v0.0.5)
+## What's New in v0.1.2 (Changelog from v0.0.5)
 
 1. **New `readlines()` and `readcols()` APIs**:
    - Replaced legacy cryptic parameter calls like `f1.read('c/l')` and `f1.read('l/c')` with dedicated, readable methods `f1.readcols()` and `f1.readlines()`.
