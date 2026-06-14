@@ -18,7 +18,7 @@ pip install tablefile
 3. **Robust Missing-Column Handling (Padding)**:
    - If columns are missing or the file has uneven lines, the package pads them with `"?"` to avoid indexing exceptions, allowing mathematical calculations to proceed while letting users know some columns are missing.
 4. **Enhanced Separator Detection & Auto-splitting**:
-   - When no separator is specified (e.g. `file("data.txt")`), the package defaults to whitespace splitting (any combination of spaces and tabs).
+   - When no separator is specified (e.g. `file("data.txt")`), the package defaults to whitespace splitting (any combination of spaces and tabs). Even if a data separator is not explicitly given, the module is still expected to auto-detect the pattern and give correct results.
 5. **Direct File Modifying API**:
    - Added `f1.write(lineNo, ColNo, value)` to replace any element in the file on disk, preserving comments, blank lines, and file delimiters (auto-detected).
 6. **Strict Type Preservation**:
@@ -39,7 +39,7 @@ from tablefile import *
 # Open a file separated by tabs:
 f1 = file("data.txt", "\t")
 
-# Open a file separated by spaces (or let it auto-detect whitespace spaces/tabs):
+# Open a file without specifying a separator (even if the data separator is not given, the module is expected to give correct results):
 f1 = file("data.txt")
 ```
 
