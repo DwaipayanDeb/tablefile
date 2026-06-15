@@ -6,3 +6,5 @@ from .file import av
 from .file import mx
 from .file import mn
 from .file import sm
+
+__version__ = "1.0.0"

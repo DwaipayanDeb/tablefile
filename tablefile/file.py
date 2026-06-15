@@ -1,5 +1,5 @@
 
-#v0.1.2
+#v1.0.0
 from math import *
 class file:
 
@@ -334,7 +334,13 @@ class file:
             return self.readlines()
         return self.readcols(*operator)
 
-    def write(self, lineNo, ColNo, value):
+    def __setitem__(self, key, value):
+        if not isinstance(key, tuple) or len(key) != 2:
+            print("Error: Index must be a 2-tuple: (lineNo, colNo). Example: f1[1, 2] = 1.3 or f1[:, 1] = col2")
+            import sys
+            sys.exit(0)
+            
+        lineNo, ColNo = key
         with open(self.filename, "r") as f:
             lines = f.readlines()
         
@@ -355,34 +361,113 @@ class file:
             if not ln[0:1] == "#" and not ln[0:1] == "\n":
                 data_line_indices.append(idx)
                 
-        try:
-            target_idx = data_line_indices[lineNo]
-        except IndexError:
-            print(f"Error: lineNo '{lineNo}' is out of range. The file has {len(data_line_indices)} data lines (0 to {len(data_line_indices)-1}).")
-            import sys
-            sys.exit(0)
-            
-        ln = lines[target_idx]
-        ln_clean = ln.rstrip('\r\n')
-        line_ending = ln[len(ln_clean):]
+        is_all_lines = (lineNo == ":" or isinstance(lineNo, slice))
+        is_all_cols = (ColNo == ":" or isinstance(ColNo, slice))
         
-        parts = ln_clean.split(sep)
-        
-        if ColNo < 0:
-            ColNo = len(parts) + ColNo
-            if ColNo < 0:
-                print(f"Error: ColNo '{ColNo}' is out of range for this line which has {len(parts)} columns.")
+        if is_all_lines and is_all_cols:
+            if not isinstance(value, (list, tuple)):
+                print("Error: For replacing all cells, value must be a list of lists.")
+                import sys
+                sys.exit(0)
+            if len(value) != len(data_line_indices):
+                print(f"Error: Number of rows in value ({len(value)}) does not match the number of data lines ({len(data_line_indices)}).")
+                import sys
+                sys.exit(0)
+            for idx_in_data, target_idx in enumerate(data_line_indices):
+                ln = lines[target_idx]
+                ln_clean = ln.rstrip('\r\n')
+                line_ending = ln[len(ln_clean):]
+                
+                row_val = value[idx_in_data]
+                if isinstance(row_val, (list, tuple)):
+                    new_line_content = sep.join(str(val) for val in row_val)
+                else:
+                    new_line_content = str(row_val)
+                lines[target_idx] = new_line_content + line_ending
+                
+        elif is_all_lines:
+            if not isinstance(value, (list, tuple)):
+                val_list = [value] * len(data_line_indices)
+            else:
+                val_list = value
+                
+            if len(val_list) != len(data_line_indices):
+                print(f"Error: Length of value list ({len(val_list)}) does not match the number of data lines ({len(data_line_indices)}).")
                 import sys
                 sys.exit(0)
                 
-        while len(parts) <= ColNo:
-            parts.append("?")
+            for idx_in_data, target_idx in enumerate(data_line_indices):
+                ln = lines[target_idx]
+                ln_clean = ln.rstrip('\r\n')
+                line_ending = ln[len(ln_clean):]
+                parts = ln_clean.split(sep)
+                
+                target_col = ColNo
+                if target_col < 0:
+                    target_col = len(parts) + target_col
+                    if target_col < 0:
+                        print(f"Error: ColNo '{ColNo}' is out of range for data line index {idx_in_data}.")
+                        import sys
+                        sys.exit(0)
+                
+                while len(parts) <= target_col:
+                    parts.append("?")
+                
+                parts[target_col] = str(val_list[idx_in_data])
+                lines[target_idx] = sep.join(parts) + line_ending
+                
+        elif is_all_cols:
+            try:
+                target_idx = data_line_indices[lineNo]
+            except IndexError:
+                print(f"Error: lineNo '{lineNo}' is out of range. The file has {len(data_line_indices)} data lines (0 to {len(data_line_indices)-1}).")
+                import sys
+                sys.exit(0)
+                
+            ln = lines[target_idx]
+            ln_clean = ln.rstrip('\r\n')
+            line_ending = ln[len(ln_clean):]
             
-        parts[ColNo] = str(value)
-        lines[target_idx] = sep.join(parts) + line_ending
-        
+            if isinstance(value, (list, tuple)):
+                new_line_content = sep.join(str(val) for val in value)
+            else:
+                new_line_content = str(value)
+                
+            lines[target_idx] = new_line_content + line_ending
+            
+        else:
+            if isinstance(value, (list, tuple)):
+                print("Error: Cannot assign a list/tuple to a single cell.")
+                return
+            try:
+                target_idx = data_line_indices[lineNo]
+            except IndexError:
+                print(f"Error: lineNo '{lineNo}' is out of range. The file has {len(data_line_indices)} data lines (0 to {len(data_line_indices)-1}).")
+                import sys
+                sys.exit(0)
+                
+            ln = lines[target_idx]
+            ln_clean = ln.rstrip('\r\n')
+            line_ending = ln[len(ln_clean):]
+            
+            parts = ln_clean.split(sep)
+            
+            if ColNo < 0:
+                ColNo = len(parts) + ColNo
+                if ColNo < 0:
+                    print(f"Error: ColNo '{ColNo}' is out of range for this line which has {len(parts)} columns.")
+                    import sys
+                    sys.exit(0)
+                    
+            while len(parts) <= ColNo:
+                parts.append("?")
+                
+            parts[ColNo] = str(value)
+            lines[target_idx] = sep.join(parts) + line_ending
+            
         with open(self.filename, "w") as f:
             f.writelines(lines)
+
 
             
 def convert(List,expression):

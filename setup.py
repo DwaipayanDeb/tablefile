@@ -1,13 +1,13 @@
 import os
 import setuptools
 
-readme_path = os.path.join(os.path.dirname(__file__), "readme.md")
+readme_path = os.path.join(os.path.dirname(__file__), "README.md")
 with open(readme_path, "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
     name="tablefile", # Package Name
-    version="0.1.2",
+    version="1.0.0",
     author="Dwaipayan Deb",
     author_email="dwaipayandeb@yahoo.co.in",
     description="A package for reading and processing tabular data files for analytical applications",

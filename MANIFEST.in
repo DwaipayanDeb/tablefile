@@ -1,0 +1,6 @@
+include LICENSE
+include README.md
+recursive-include tablefile *.py
+global-exclude *.py[cod] __pycache__
+prune build
+prune dist

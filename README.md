@@ -1,4 +1,4 @@
-# tablefile Package Tutorial (v0.1.2)
+# tablefile Package Tutorial (v1.0.0)
 
 `tablefile` is a python package for reading, processing, and modifying tabular data files (separated by tabs, spaces, or any other delimiter) easily for analytical applications.
 
@@ -9,7 +9,7 @@ pip install tablefile
 
 ---
 
-## What's New in v0.1.2 (Changelog from v0.0.5)
+## What's New in v1.0.0 (Changelog from v0.0.5)
 
 1. **New `readlines()` and `readcols()` APIs**:
    - Replaced legacy cryptic parameter calls like `f1.read('c/l')` and `f1.read('l/c')` with dedicated, readable methods `f1.readcols()` and `f1.readlines()`.
@@ -19,8 +19,8 @@ pip install tablefile
    - If columns are missing or the file has uneven lines, the package pads them with `"?"` to avoid indexing exceptions, allowing mathematical calculations to proceed while letting users know some columns are missing.
 4. **Enhanced Separator Detection & Auto-splitting**:
    - When no separator is specified (e.g. `file("data.txt")`), the package defaults to whitespace splitting (any combination of spaces and tabs). Even if a data separator is not explicitly given, the module is still expected to auto-detect the pattern and give correct results.
-5. **Direct File Modifying API**:
-   - Added `f1.write(lineNo, ColNo, value)` to replace any element in the file on disk, preserving comments, blank lines, and file delimiters (auto-detected).
+5. **Direct File Modifying Slicing API**:
+   - Added support for index assignment (e.g., `f1[lineNo, ColNo] = value`) to replace any element, column (e.g., `f1[:, ColNo] = col_values`), or line (e.g., `f1[lineNo, :] = line_values`) in the file on disk, preserving comments, blank lines, and file delimiters (auto-detected).
 6. **Strict Type Preservation**:
    - Elements are parsed preserving their exact types (`int`, `float`, and `str`). For example, integers in the file remain `int` when loaded, instead of being cast to `float` as in `v0.0.5`.
 7. **Clean Exception Handling**:
@@ -90,14 +90,19 @@ line_min = f1.readlines("mn")       # Minimum value for each row
 ```
 
 ### 4. Modifying Data
-To replace or insert a value in the file on disk:
+To replace or insert values in the file on disk, use native Python indexing and slicing:
 
 ```python
-# write(lineNo, ColNo, value)
-# Example: replace the element at 0-indexed row 2, column 5 with "new_val":
-f1.write(2, 5, "new_val")
+# Replace a single cell at 0-indexed row 2, column 5 with "new_val":
+f1[2, 5] = "new_val"
+
+# Replace an entire column with a list of new values:
+f1[:, 1] = [10, 20, 30, 40]
+
+# Replace an entire row with a list of new values:
+f1[2, :] = [1.5, 2.5, "abc"]
 ```
-*Note: If `ColNo` exceeds the current columns in that line, the package automatically pads the columns with `"?"` and writes the value, preserving the rest of the file layout (including comments and empty lines).*
+*Note: If the column index exceeds the current columns in that line, the package automatically pads the columns with `"?"` and writes the value, preserving the rest of the file layout (including comments and empty lines).*
 
 ---
 
@@ -128,13 +133,14 @@ f1.write(2, 5, "new_val")
 - **Return Type**: `List` (List of lists representing columns, or list of column-wise values if statistics operator is used).
 - **Behavior**: Transposes rows to columns. Auto-pads missing columns with `"?"`.
 
-### `write(lineNo, ColNo, value)`
+### Indexing and Slicing (`__setitem__`)
+- **Syntax**: `f1[lineNo, ColNo] = value`
 - **Arguments**: 
-  - `lineNo` (`int`): 0-indexed data line number (ignores comment and empty lines). Supports negative indexes (e.g. `-1` for last line).
-  - `ColNo` (`int`): 0-indexed column index. Supports negative indexes.
-  - `value` (`Any`): The value to write. The type of the value is preserved exactly when written and read back.
+  - `lineNo` (`int`, `slice`, or `":"`): 0-indexed data line number (ignores comment and empty lines), or a slice to target all lines. Supports negative indexes.
+  - `ColNo` (`int`, `slice`, or `":"`): 0-indexed column index, or a slice to target all columns. Supports negative indexes.
+  - `value` (`Any` or `List`): The value(s) to write. If targeting a single cell, `value` must be a single element (not a list/tuple). If targeting a row or column, `value` can be a list of values.
 - **Return Type**: `None`
-- **Behavior**: Modifies the file on disk. Auto-pads columns with `"?"` if writing out of bounds.
+- **Behavior**: Modifies the file on disk. Auto-pads columns with `"?"` if writing out of bounds. Prints an error and does not write if a list/tuple is assigned to a single cell index.
 
 ---
 
